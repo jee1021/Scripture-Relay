@@ -7,13 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 class User(AbstractUser):
 
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-        verbose_name=_("고유 ID"),
-    )
-
     username = models.CharField(
         _("사용자 이름 (선택)"),
         max_length=150,
@@ -32,6 +25,7 @@ class User(AbstractUser):
 
     code_id = models.CharField(
         _("코드 ID"),
+        default=uuid.uuid4(),
         max_length=12,
         unique=True,
         blank=True,
