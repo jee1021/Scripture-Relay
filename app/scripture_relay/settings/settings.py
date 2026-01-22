@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.ninja',
     'app.scripture_relay',
 ]
-
+AUTH_USER_MODEL = "users.User",
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

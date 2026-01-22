@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -5,8 +7,14 @@ from django.utils.translation import gettext_lazy as _
 
 class User(AbstractUser):
 
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name=_("고유 ID"),
+    )
 
-    # username을 안 쓰고 싶다면 아래처럼 null/blank 허용
+    # username은 선택적 (필요 없으면 나중에 제거 가능)
     username = models.CharField(
         _("사용자 이름 (선택)"),
         max_length=150,
@@ -23,15 +31,15 @@ class User(AbstractUser):
         error_messages={"unique": _("이미 사용 중인 이메일입니다.")},
     )
 
-    # code_id가 정말 필요한 경우에만 추가 (권장 X)
-    # 대부분의 경우 email이나 id(pk)로 충분합니다.
+    # 집사님/교회 리더가 발급하는 코드 (초대코드, 멤버 코드 등)
     code_id = models.CharField(
         _("코드 ID"),
         max_length=12,
         unique=True,
-        blank=True,
+        blank=True,          # 처음 가입 시 비어있을 수 있음
         null=True,
-        help_text=_("외부 시스템 연동용 고유 코드 (선택)"),
+        db_index=True,
+        help_text=_("집사님 또는 청년부 리더가 발급한 코드 (로그인/초대용)"),
     )
 
     nickname = models.CharField(
@@ -41,9 +49,9 @@ class User(AbstractUser):
         help_text=_("서비스 내 표시 이름 (미입력 시 이메일 앞부분 사용)"),
     )
 
-    # 중요 설정들
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    # 중요 설정
+    USERNAME_FIELD = "email"          # 기본 로그인 필드
+    REQUIRED_FIELDS = []              # createsuperuser 시 추가 요구 필드 없음
 
     class Meta:
         verbose_name = _("사용자")
